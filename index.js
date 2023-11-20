@@ -7,7 +7,7 @@ const app = {};
 
 // configuration
 app.config = {
-   port: 6000,
+   port: 3000,
 }
 
 

@@ -1,20 +1,28 @@
 // dependencies
 
-
 // scaffolding
-const environment ={};
+const environment = {};
 
-
-// create the environment of first server
+// create the staging
 environment.staging = {
    port:3000,
+   envName:'staging',
 }
 
-
-// create the environment of second server
+// create the production
 environment.production ={
    port:5000,
+   envName:'production',
 }
 
+
+// chosen the current environment
+const currentEnvironment = typeof(process.env.NODE_ENV) === 'string' ? process.env.NODE_ENV : 'staging'
+
+// create the object
+const environmentToObject = typeof environment[currentEnvironment] === 'object' ? environment[currentEnvironment] : environment.staging;
+
 // export
-module.exports = environment;
+module.exports = environmentToObject;
+
+

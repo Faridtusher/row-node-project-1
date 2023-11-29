@@ -3,7 +3,7 @@ const url = require('url');
 const {StringDecoder} = require('string_decoder')
 const {routeHandler} = require('../route');
 const {notFoundHandler} = require('../handler/routerHandler/notFoundHandler');
-const { type } = require('os');
+const {parseJSON} = require('../helpers/utilities')
 
 // scaffolding
 const handel = {};
@@ -27,6 +27,7 @@ handel.handelReqRes = (req, res) =>{
       headerObject
    }
 
+   
    const decode = new StringDecoder('utf-8')
    let realData = '';
    req.on('data', (buffer) =>{
@@ -35,9 +36,9 @@ handel.handelReqRes = (req, res) =>{
 
    req.on('end', () =>{
       realData = realData + decode.end();
+      requestProperties.body = parseJSON(realData);
 
       const chosenHandler = routeHandler[trimPath] ? routeHandler[trimPath] : notFoundHandler;
-
       chosenHandler(requestProperties, (statusCode, payload)=>{
          statusCode = typeof(statusCode) ==='number' ? statusCode : 500,
          payload = typeof (payload) === 'object' ? payload : {};

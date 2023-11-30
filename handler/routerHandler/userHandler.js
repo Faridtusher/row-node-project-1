@@ -1,5 +1,5 @@
 // dependencies
-const { parseJSON } = require('../../helpers/utilities');
+const { parseJSON, hash} = require('../../helpers/utilities');
 const data = require('../../lib/data')
 
 // module scaffolding
@@ -61,7 +61,7 @@ handelRoute._user.post = (requestProperties , callBack) =>{
             firstName,
             lastName,
             phone,
-            password,
+            password : hash(password),
             tosAgreement
          }
          
@@ -159,7 +159,7 @@ handelRoute._user.put = (requestProperties, callBack) => {
                   userData.lastName = lastName
                }
                if (password) {
-                  userData.password = password
+                  userData.password = hash(password)
                }
 
                // update the file

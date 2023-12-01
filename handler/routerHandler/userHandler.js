@@ -1,6 +1,7 @@
 // dependencies
 const { parseJSON, hash} = require('../../helpers/utilities');
 const data = require('../../lib/data')
+const verification = require('./tokenHandler')
 
 // module scaffolding
 const handelRoute = {};
@@ -99,15 +100,25 @@ handelRoute._user.get = (requestProperties, callBack) =>{
 
    if(phone){
       // read the data
-      data.read('user', phone, (err1, uData) =>{
-         if(!err1 && uData){
-            const userData = parseJSON(uData);
-            delete userData.password 
-            callBack(200, userData)
+      const token = typeof(requestProperties.headerObject.token) === 'string' ? requestProperties.headerObject.token : false;
+      verification._token.verify(token, phone, (isTokenValid) =>{
+         if(isTokenValid){
+            data.read('user', phone, (err1, uData) => {
+               if (!err1 && uData) {
+                  const userData = parseJSON(uData);
+                  delete userData.password
+                  callBack(200, userData)
+               }
+               else {
+                  callBack(400, {
+                     message: 'can not read the file'
+                  })
+               }
+            })
          }
          else{
-            callBack(400,{
-               message:'can not read the file'
+            callBack(403,{
+               message:'Authentication error'
             })
          }
       })
@@ -198,34 +209,49 @@ handelRoute._user.put = (requestProperties, callBack) => {
 
 // create the delete method
 handelRoute._user.delete = (requestProperties, callBack) => {
+
    const phone = typeof (requestProperties.queryObject.phone) === 'string' && requestProperties.queryObject.phone.trim().length === 11 ? requestProperties.queryObject.phone : false
 
    if(phone){
+      const token = typeof(requestProperties.headerObject.token) === 'string' ? requestProperties.headerObject.token : false;
 
-      data.read('user', phone, (err1) =>{
-         if(!err1){
-            data.delete('user', phone, (err2) =>{
-               if(err2){
-                  callBack(200,{
-                     message:'phone number is deleted successfully'
+      // verify the token
+      verification._token.verify(token, phone, (isTokenValid) =>{
+         if(isTokenValid){
+            // read the file
+            data.read('user', phone, (err1) =>{
+               if(!err1){
+                  // delete the file
+                  data.delete('user', phone, (err2) =>{
+                     if(err2){
+                        callBack(200,{
+                           message:'User was successfully delete'
+                        })
+                     }
+                     else{
+                        callBack(400,{
+                           message:'User was not deleted'
+                        })
+                     }
                   })
                }
                else{
-                  callBack(400,{
-                     message:'Do not delete the file'
+                  callBack(404,{
+                     message:'Can not read the file'
                   })
                }
             })
          }
          else{
-            callBack(405,{
-               message:'This phone no is not in the database'
+            callBack(400,{
+               message:'Authentication failure'
             })
          }
-      })
-   }else{
-      callBack(500,{
-         message:'phone number is not valid'
+      })  
+   }
+   else{
+      callBack(400,{
+         message:'Your phone number is not valid'
       })
    }
 }

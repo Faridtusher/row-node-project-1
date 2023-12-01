@@ -28,6 +28,27 @@ utilities.hash = (str) =>{
    }
 }
 
+// create the random string
+utilities.createRandomString = (strLength) => {
+   let length = strLength;
+   length = typeof(strLength) === 'number' && strLength > 0 ? strLength : false;
+
+   if(length){
+      const possibleChar = 'abcdefghijklmnopqrstuvwxyz0123456789'
+      let output = '';
+
+      for(let i = 1 ; i <= length; i++){
+         const randomChar = possibleChar.charAt(Math.floor(Math.random() * possibleChar.length))
+         output = output + randomChar
+      }
+      return output
+   }
+   else{
+      return false
+   }
+
+}
+
 
 
 // exports

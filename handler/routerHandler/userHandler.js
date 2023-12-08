@@ -159,46 +159,58 @@ handelRoute._user.put = (requestProperties, callBack) => {
          : false;
 
    if(phone){
-      data.read('user', phone, (err1, uData) =>{
-         const userData = parseJSON(uData)
-         if(!err1){
-            if(firstName || lastName || password){
-               if(firstName){
-                  userData.firstName = firstName
-               }
-               if (lastName) {
-                  userData.lastName = lastName
-               }
-               if (password) {
-                  userData.password = hash(password)
-               }
+      const token = typeof(requestProperties.headerObject.token) === 'string' ? requestProperties.headerObject.token : false;
 
-               // update the file
-               data.update('user', phone, userData, (err3) =>{
-                  if(err3){
+      // check the verification
+      verification._token.verify(token, phone, (isTokenValid) =>{
+         if(isTokenValid){
+            // read the file
+            data.read('user', phone, (err1 , uData) =>{
+               if(!err1 && uData){
+                  const userData = parseJSON(uData);
+                  
+                 if(firstName || lastName || password){
+                  if(firstName){
+                     userData.firstName = firstName
+                  }
+                  if(lastName){
+                     userData.lastName = lastName
+                  }
+                  if(password){
+                     userData.password = hash(password)
+                  }
+                 }
+
+               
+
+               //   update the data
+               data.update('user', phone, userData, (err2) =>{
+                  if(!err2){
                      callBack(200,{
-                        message:'user update successfully'
+                        message:'Successfully update'
                      })
                   }
                   else{
-                     callBack(500,{
-                        message:'user do not update successfully'
+                     callBack(400,{
+                        message:'Not update'
                      })
                   }
                })
-            }
-            else{
-               callBack(500,{
-                  message:'not get the valid info'
-               })
-            }
+               }
+               else{
+                  callBack(400,{
+                     message:'Can not read the token data'
+                  })
+               }
+            })
          }
          else{
-            callBack(500,{
-               message:'can not get the phone number'
+            callBack(400,{
+               message:'Authentication error'
             })
          }
       })
+
    }else{
       callBack(405,{
          message:'invalid number'

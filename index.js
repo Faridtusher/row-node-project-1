@@ -2,10 +2,17 @@
 const http = require('http')
 const environment = require('./helpers/environment')
 const {handelReqRes} = require('./helpers/handelReqRes')
-const data = require('./lib/data')
+const twilio = require('./helpers/notification')
 
 // scaffolding
 const app ={};
+
+// do the twilio
+twilio.sendMsgTwilio('01164374797', 'I love Almighty', (err) =>{
+   console.log(`This is the error ${err}`)
+})
+
+
 
 // create the server
 app.createServer = () =>{

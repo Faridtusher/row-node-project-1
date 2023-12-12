@@ -9,6 +9,11 @@ environment.staging = {
    envName:'staging',
    secretKey:'abcyhuihiji4699',
    maxCheck: 5,
+   twilio:{
+      fromPhone:'01714256632',
+      accountSid: 'AC0b6e4028d6ca96d3fb2666590a85eea5',
+      authToken: '96905303fcfbab7313ef4c71101360ee'
+   }
 }
 
 // create the production
@@ -17,6 +22,11 @@ environment.production ={
    envName:'production',
    secretKey: 'abcyhuihiji4699',
    maxCheck: 5,
+   twilio: {
+      fromPhone: '01714256631',
+      accountSid: 'AC0b6e4028d6ca96d3fb2666590a85eea5',
+      authToken: '96905303fcfbab7313ef4c71101360ee'
+   }
 }
 
 
